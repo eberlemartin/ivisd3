@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="d3.min.js"></script>
+    <meta charset="UTF-8">
+    <title>First Visualization</title>
+</head>
+<body>
+<article>
+    <h2>Kreis mit Datenabhängigem Radius</h2>
+    <text>Zum lernen von SVG und JavaScript allgemein. Die Kreisgrössen und die Farben kommen jeweils aus einem Array.</text>
+    <script>
+        var circleRadii = [40, 20, 10];
+        var colors = ["green", "red", "blue"];
+        var svgContainer = d3.select("body").append("svg")
+            .attr("width", 200)
+            .attr("height", 200);
+
+        var circles = svgContainer.selectAll("circle")
+            .data(circleRadii)
+            .enter()
+            .append("circle");
+
+        var circleAttrib= circles
+            .attr("cx", 50)
+            .attr("cy", 50)
+            .attr("r", function(d){ return d; } )
+            .style("fill", function(d,i){ return colors[i];});
+    </script>
+</article>
+<article>
+    <h2>Koordinatenraum mit Kreisen</h2>
+    <text>Zum lernen von JavaScript und dem Umgang mit Daten und Positionierung. Die Farben und die Kreisepositionen kommen jeweils aus einem Array.</text>
+    <script>
+        var spaceCircles = [30, 70, 110];
+        var colors = ["green", "red", "blue"];
+        var svgContainer = d3.select("body").append("svg")
+            .attr("width", 200)
+            .attr("height", 200)
+            //.style("border", "1px solid black"); BESSER AUS CSS!
+
+        var circles = svgContainer.selectAll("circle")
+            .data(spaceCircles)
+            .enter()
+            .append("circle");
+
+        var circleAttributes = circles
+            .attr("cx", function(d) { return d;})
+            .attr("cy", function(d) { return d;})
+            .attr("r", 20)
+            .style("fill", function(d,i){ return colors[i];});
+    </script>
+</article>
+<article>
+    <h2>Skalierender Koordinatenraum</h2>
+    <text>Die Daten und deren Verhältnis  werden auf die Grösse des SVG Areas umgerechnet. Die Daten kommen wiederum aus Arrays. Wichtig: max, min, extent, domain, range.</text>
+    <script>
+        var circleData = [
+            {x:10, y:10, w:20, h:20, col:"blue"},
+            {x:80, y:40, w:20, h:20, col:"red"},
+            {x:110, y:90, w:20, h:20, col:"purple"},
+            {x:170, y:200, w:20, h:20, col:"blue"},
+            {x:260, y:240, w:20, h:20, col:"red"},
+            {x:290, y:40, w:20, h:20, col:"red"}
+            ];
+
+        var svgArea = d3.select("body").append("svg")
+            .attr("width", 220)
+            .attr("height", 220)
+
+        var x = d3.scaleLinear()
+            .range([0,200])
+            .domain([-40, d3.max(circleData, function(d){return (d.x)+40;})]);
+        //d3.max(circleData, function(d){return d.x})
+
+        var y = d3.scaleLinear()
+            .range([0,200])
+            .domain([-40, d3.max(circleData, function(d){return (d.y)+40;})]);
+        //d3.max(circleData, function(d){return d.y })
+
+        var circles = svgArea.selectAll("circle")
+            .data(circleData)
+            .enter()
+            .append("circle");
+
+        var circleFormats = circles
+            .attr("cx", function(d){return x(d.x);})
+            //function(d){return d.x;}
+            .attr("cy", function(d){return y(d.y);})
+            .attr("r", function(d){return d.w;})
+            .style("fill", function(d){return d.col;});
+
+        var xAchse = d3.axisBottom(x)
+            .ticks(4);
+
+        var yAchse = d3.axisLeft(y)
+            .ticks(4);
+
+        svgArea.append("g")
+            .attr("transform", "translate(0," + 200 + ")")
+            .call(xAchse);
+
+        svgArea.append("g")
+            .call(yAchse);
+
+    </script>
+</article>
+</body>
+</html>
