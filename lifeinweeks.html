@@ -6,6 +6,23 @@
     <title>My Life in Weeks</title>
 </head>
 <body>
+<style>
+    body
+    .toolTip {
+        position: absolute;
+        pointer-events: none;
+        display: none;
+        min-width: 50px;
+        height: auto;
+        background: none repeat scroll 0 0 #ffffff;
+        padding: 9px 14px 6px 14px;
+        border-radius: 2px;
+        text-align: center;
+        line-height: 1.3;
+        color: #5B6770;
+        box-shadow: 0px 3px 9px rgba(0, 0, 0, .15);
+    }
+</style>
     <article>
         <h1>This is my life in weeks so far...</h1>
         <script>
@@ -21,21 +38,20 @@
             ]
             */
             //http://stackoverflow.com/questions/17246002/construct-an-array-of-dates-between-start-and-end-dates-d3-js
-            var life = d3.timeDays(new Date(1987,5,5), new Date(2077,5,6));
+            var life = d3.timeWeeks(new Date(1987,4,5), new Date(2077,4,6));
 
             var lifeData = [
-                { start: new Date(1987,4,5), end: new Date(2016,4,5)},
-                { start: new Date(1988,4,5), end: new Date(2016,9,5)},
-                { start: new Date(1989,4,5), end: new Date(2011,4,5)},
-                { start: new Date(2000,4,5), end: new Date(1999,7,30)}
-                /*{start:1987-05-05, end:1992-08-31, task:"wachsen", color:"grey"},
-                {start:1992-09-01, end:1997-08-31, task:"primarschule", color:"blue"},
-                {start:1997-09-01, end:2001-08-31, task:"sekundarschule", color:"yellow"}
-                */
+                { start: new Date(1987,4,5), end: new Date(1994,6,31), text:"baby", color:"green"},
+                { start: new Date(1994,7,1), end: new Date(1999,5,1), text:"Grundschule", color:"blue"},
+                { start: new Date(1999,7,1), end: new Date(2003,5,1), text:"Sekundarschule", color:"yellow"},
+                { start: new Date(2003,7,1), end: new Date(2007,5,1), text:"Berufslehre", color:"orange"},
+                { start: new Date(2009,11,1), end: new Date(2011,7,31), text:"Edg. Fa. Informatik", color:"red"},
+                { start: new Date(2012,8,1), end: new Date(2017,2,31), text:"BSc Informatik", color:"purple"}
+
             ];
             //520x900 for data, rest for axis description etc
             var margin = {top: 20, right: 20, bottom: 20, left:20};
-            var width = 560 - margin.left - margin.right,
+            var width = 580 - margin.left - margin.right,
                 height = 940 - margin.top - margin.bottom;
 
             var svgArea = d3.select("body").append("svg")
@@ -62,6 +78,15 @@
                 .enter()
                 .append("rect");
 
+            /*var checkColor = d3.selectAll(lifeData).each(function (d)
+            {
+                if(this.start < d && this.end > d){
+                    return this.color;
+                }
+            });*/
+
+            //var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+
             var styleRect = rectangles
                 .attr("x", function(d){return x(formatWeek(d));})
                 .attr("y", function(d){return y(formatYear(d));})
@@ -71,15 +96,34 @@
                 .attr("height", 9)
                 .attr("stroke", "black")
                 .attr("stroke-width", 1)
-                .style("fill", function (d){
-                    if(d > lifeData[0].start && d < lifeData[0].end)
-                    {
-                        return "green";
-                    } else
-                    {
-                        return "white";
+                //.style("fill", "white")
+                .style("fill", function(d){
+                    for(a = 0; a < lifeData.length; a++){
+                        if(d >= lifeData[a].start && d <= lifeData[a].end){
+                            return lifeData[a].color;
+                        }
                     }
-                });
+                } );
+
+            /*
+                /*.on("mouseover", function(d){
+                    d3.select("toolTip")
+                        .style("left", parseFloat(d3.select(this).attr("x")))
+                        .style("top", parseFloat(d3.select(this).attr("y")))
+                        .text(d.text)
+                })*/
+
+            /*
+             function (d){
+             if(d > lifeData[0].start && d < lifeData[0].end)
+             {
+             return "green";
+             } else
+             {
+             return "white";
+             }
+             }
+             */
 
             var xAchse = d3.axisBottom(x)
                 .ticks(5);
