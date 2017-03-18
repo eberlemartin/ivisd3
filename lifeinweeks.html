@@ -11,7 +11,7 @@
         <script>
 
             //weeks from 0 - 4680
-            var week = d3.range(4680);
+            /*var week = d3.range(4680);
             var lifeData = [
                 {start:0, end:104, task:"busy being a baby", color:"grey"},
                 {start:389, end:649, task:"Primarschule", color:"lightblue"},
@@ -19,21 +19,95 @@
                 {start:1092, end:1170, task:"Eidg. Fa. Informatik", color:"orange"},
                 {start:1171, end:1560, task:"Bsc Informatik FHNW", color:"red"}
             ]
+            */
+            //http://stackoverflow.com/questions/17246002/construct-an-array-of-dates-between-start-and-end-dates-d3-js
+            var life = d3.timeDays(new Date(1987,5,5), new Date(2077,5,6));
+
+            var lifeData = [
+                { start: new Date(1987,4,5), end: new Date(2016,4,5)},
+                { start: new Date(1988,4,5), end: new Date(2016,9,5)},
+                { start: new Date(1989,4,5), end: new Date(2011,4,5)},
+                { start: new Date(2000,4,5), end: new Date(1999,7,30)}
+                /*{start:1987-05-05, end:1992-08-31, task:"wachsen", color:"grey"},
+                {start:1992-09-01, end:1997-08-31, task:"primarschule", color:"blue"},
+                {start:1997-09-01, end:2001-08-31, task:"sekundarschule", color:"yellow"}
+                */
+            ];
             //520x900 for data, rest for axis description etc
+            var margin = {top: 20, right: 20, bottom: 20, left:20};
+            var width = 560 - margin.left - margin.right,
+                height = 940 - margin.top - margin.bottom;
+
             var svgArea = d3.select("body").append("svg")
-                .attr("width", 550)
-                .attr("height", 950);
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var x = d3.scaleLinear()
+                .domain([0,51])
+                .range([0,519]);
+
+            var y = d3.scaleLinear()
+                .domain([1987,2078])
+                .range([0,899]);
+
+
+            //date formatting: https://github.com/d3/d3-time-format/blob/master/README.md#locale_format
+            var formatWeek = d3.timeFormat("%W");
+            var formatYear = d3.timeFormat("%Y");
 
             var rectangles = svgArea.selectAll("rect")
-                .data(week)
+                .data(life)
                 .enter()
                 .append("rect");
 
-            var styleRectangles = rectangles
+            var styleRect = rectangles
+                .attr("x", function(d){return x(formatWeek(d));})
+                .attr("y", function(d){return y(formatYear(d));})
+                .attr("rx", 3)
+                .attr("ry", 3)
+                .attr("width", 9)
+                .attr("height", 9)
+                .attr("stroke", "black")
+                .attr("stroke-width", 1)
+                .style("fill", function (d){
+                    if(d > lifeData[0].start && d < lifeData[0].end)
+                    {
+                        return "green";
+                    } else
+                    {
+                        return "white";
+                    }
+                });
+
+            var xAchse = d3.axisBottom(x)
+                .ticks(5);
+
+            var yAchse = d3.axisLeft(y)
+                .ticks(20);
+
+            svgArea.append("g")
+                .attr("transform", "translate(0," + 900 + ")")
+                .call(xAchse);
+
+            svgArea.append("g")
+                .attr("transform", "translate(0,0)")
+                .call(yAchse);
+
+            /*var styleRectangles = rectangles
+                .attr("x", function(d,i) { return (i%52)*10})
+                .attr("y", function(d,i) { return Math.floor(i/52)*10})
                 .attr("width", 10)
                 .attr("height", 10)
-                .style("fill", "white");
-
+                .style("fill", function(d,i){
+                    if(d >= lifeData[i].start && d <= lifeData[i].end)
+                        {
+                            return lifeData[i].color;
+                        }
+                    else {return "white";}
+                });
+            */
         </script>
     </article>
 
