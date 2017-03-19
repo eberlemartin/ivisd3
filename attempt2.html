@@ -34,9 +34,9 @@
             text-align: center;
             width: auto;
             height: auto;
-            padding: 0px;
+            padding: 0;
             background: navy;
-            border: 0px;
+            border: 0;
             border-radius: 5px;
             pointer-events: none;
             font-size: small;
@@ -88,7 +88,7 @@
 
         var div = d3.select("body").select("article").append("div")
             .attr("class", "tooltip")
-            .style("opacity", 0)
+            .style("opacity", 0);
 
 
         var svgArea = d3.select("body").select("article").append("svg")
@@ -116,9 +116,7 @@
             .append("rect");
 
         var styleRect = rectangles
-            .attr("x", function(d){
-                console.log(+formatWeek(d.date)+1)
-                return x(+formatWeek(d.date)+1);}) //first + makes string to int, sencond + adds 1
+            .attr("x", function(d){return x(+formatWeek(d.date)+1);}) //first + makes string to int, sencond + adds 1
             .attr("y", function(d){return y(formatYear(d.date)-1986);}) //format years to 1-90
             .attr("rx", 3)
             .attr("ry", 3)
@@ -138,7 +136,7 @@
                 .style("left", (d3.event.pageX)+10 + "px")
                 .style("top", (d3.event.pageY)-10 + "px");
         })
-            .on("mouseout", function(d)
+            .on("mouseout", function()
             {
                div.transition()
                    .duration(200)
@@ -159,13 +157,15 @@
             .call(yAchse);
 
     </script>
+
     <p>Kommentare:
-        <ul>
-            <li>Manche Jahre haben mehr als 52 Wochen...</li>
-            <li>Mitte Jahr Geburt bis 90 Jahre später ergibt eine Skala von 91 Jahren</li>
-        </ul>
+    <ul>
+        <li>Manche Jahre haben mehr als 52 Wochen...</li>
+        <li>Mitte Jahr Geburt bis 90 Jahre später ergibt eine Skala von 91 Jahren</li>
+    </ul>
     </p>
 </article>
+
 
 </body>
 </html>
