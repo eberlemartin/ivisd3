@@ -14,6 +14,9 @@
             font-weight: 600;
             text-align: center;
         }
+        p {
+            text-align: center;
+        }
 
         article {
             margin-left: auto;
@@ -45,22 +48,24 @@
 </head>
 <body>
 <article>
-    <h1>My Life in Weeks</h1>
+    <h1>Mein Leben in Wochen</h1>
+    <p>...die Woche startet jeweils am Montag</p>
     <script>
 
         //http://stackoverflow.com/questions/17246002/construct-an-array-of-dates-between-start-and-end-dates-d3-js
         var lifeData = [
-            { start: new Date(1987,4,5), end: new Date(1987,4,12), text:"Week1", color:"pink"},
-            { start: new Date(1987,4,13), end: new Date(1987,4,20), text:"Week2", color:"brown"},
-            { start: new Date(1987,4,21), end: new Date(1987,4,28), text:"Week3", color:"yellow"},
-            { start: new Date(1987,4,29), end: new Date(1987,5,5), text:"Week3", color:"purple"},
-            { start: new Date(1987,6,5), end: new Date(1994,6,31), text:"Baby", color:"green"},
-            { start: new Date(1994,7,1), end: new Date(1999,5,1), text:"Grundschule", color:"blue"},
-            { start: new Date(1999,5,2), end: new Date(1999,6,31), text:"Nothing", color:"white"},
-            { start: new Date(1999,7,1), end: new Date(2003,5,1), text:"Sekundarschule", color:"yellow"},
+            { start: new Date(1987,4,5), end: new Date(1987,4,12), text:"Geburt", color:"red"},
+            { start: new Date(1987,4,13), end: new Date(1994,6,31), text:"Baby", color:"green"},
+            { start: new Date(1994,6,31), end: new Date(1999,5,1), text:"Grundschule", color:"blue"},
+            { start: new Date(1999,5,2), end: new Date(1999,6,31), text:"Sommerferien", color:"white"},
+            { start: new Date(1999,6,31), end: new Date(2003,5,1), text:"Sekundarschule", color:"yellow"},
+            { start: new Date(2003,5,1), end: new Date(2003,6,31), text:"Sommerferien", color:"white"},
             { start: new Date(2003,7,1), end: new Date(2007,5,1), text:"Berufslehre", color:"orange"},
+            { start: new Date(2007,5,2), end: new Date(2009,10,30), text:"Arbeiten", color:"white"},
             { start: new Date(2009,11,1), end: new Date(2011,7,31), text:"Edg. Fa. Informatik", color:"red"},
-            { start: new Date(2012,8,1), end: new Date(2017,2,31), text:"BSc Informatik", color:"purple"}
+            { start: new Date(2011,8,1), end: new Date(2012,7,31), text:"Arbeiten", color:"white"},
+            { start: new Date(2012,8,1), end: new Date(2017,2,31), text:"BSc Informatik", color:"purple"},
+            { start: new Date(2017,3,1), end: new Date(2076,4,5), text:"Zukunft", color:"white"}
 
         ];
 
@@ -77,38 +82,27 @@
                 })
         });
 
-        //console.log("Weeks");
-        //console.log(lifeDataWeeks);
-        //console.log("Colors");
-        //console.log(lifeDataColors);
-        //console.log("Expanded");
-        //console.log(lifeDataExpanded);
-        //console.log("tmp2");
-        //console.log(tmp2);
-
-
-        //520x900 for data, rest for axis description etc
         var margin = {top: 20, right: 0, bottom: 20, left:30};
-        var width = 550 - margin.left - margin.right,
-            height = 940 - margin.top - margin.bottom;
+        var width = 580 - margin.left - margin.right,
+            height = 1040 - margin.top - margin.bottom;
 
-        var div = d3.select("body").append("div")
+        var div = d3.select("body").select("article").append("div")
             .attr("class", "tooltip")
             .style("opacity", 0)
 
 
-        var svgArea = d3.select("body").append("svg")
+        var svgArea = d3.select("body").select("article").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         var x = d3.scaleLinear()
-            .domain([0,51])
+            .domain([1,54])
             .range([0,width]);
 
         var y = d3.scaleLinear()
-            .domain([1,90])
+            .domain([1,91])
             .range([0,height]);
 
 
@@ -122,7 +116,9 @@
             .append("rect");
 
         var styleRect = rectangles
-            .attr("x", function(d){return x(formatWeek(d.date));})
+            .attr("x", function(d){
+                console.log(+formatWeek(d.date)+1)
+                return x(+formatWeek(d.date)+1);}) //first + makes string to int, sencond + adds 1
             .attr("y", function(d){return y(formatYear(d.date)-1986);}) //format years to 1-90
             .attr("rx", 3)
             .attr("ry", 3)
@@ -136,7 +132,9 @@
             div.transition()
                 .duration(200)
                 .style("opacity", .8);
-            div.html(d.text)
+            div.html(d.text +
+                "<br>Woche: " + (+formatWeek(d.date)+1) +
+                " Jahr: " + formatYear(d.date))
                 .style("left", (d3.event.pageX)+10 + "px")
                 .style("top", (d3.event.pageY)-10 + "px");
         })
@@ -147,26 +145,6 @@
                    .style("opacity", 0);
             });
 
-        /*    .style("fill", function(d)
-            {
-                console.log(d.color);
-                if(this.x.equals(x(formatWeek(d.date)) && this.y.equals(y(formatYear(d.date))))){
-                    return d.color;
-                } else {
-                    return white;
-                }
-            });
-
-          */
-        //.style("fill", "white")
-            /*.style("fill", function(d){
-                for(a = 0; a < lifeData.length; a++){
-                    if(d >= lifeData[a].start && d <= lifeData[a].end){
-                        return lifeData[a].color;
-                    }
-                }
-            } );
-            */
         var xAchse = d3.axisBottom(x)
             .ticks(10);
 
@@ -178,10 +156,15 @@
             .call(xAchse);
 
         svgArea.append("g")
-            //.attr("transform", "translate("+margin.left+",0)")
             .call(yAchse);
 
     </script>
+    <p>Kommentare:
+        <ul>
+            <li>Manche Jahre haben mehr als 52 Wochen...</li>
+            <li>Mitte Jahr Geburt bis 90 Jahre später ergibt eine Skala von 91 Jahren</li>
+        </ul>
+    </p>
 </article>
 
 </body>
