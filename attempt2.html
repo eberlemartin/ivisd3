@@ -18,14 +18,10 @@
             text-align: center;
         }
 
-        article {
+        article{
             margin-left: auto;
             margin-right: auto;
             width: 800px;
-        }
-
-        svg{
-
         }
 
         div.tooltip {
@@ -56,15 +52,15 @@
         var lifeData = [
             { start: new Date(1987,4,5), end: new Date(1987,4,12), text:"Geburt", color:"red"},
             { start: new Date(1987,4,13), end: new Date(1994,6,31), text:"Baby", color:"green"},
-            { start: new Date(1994,6,31), end: new Date(1999,5,1), text:"Grundschule", color:"blue"},
-            { start: new Date(1999,5,2), end: new Date(1999,6,31), text:"Sommerferien", color:"white"},
-            { start: new Date(1999,6,31), end: new Date(2003,5,1), text:"Sekundarschule", color:"yellow"},
-            { start: new Date(2003,5,1), end: new Date(2003,6,31), text:"Sommerferien", color:"white"},
-            { start: new Date(2003,7,1), end: new Date(2007,5,1), text:"Berufslehre", color:"orange"},
-            { start: new Date(2007,5,2), end: new Date(2009,10,30), text:"Arbeiten", color:"white"},
-            { start: new Date(2009,11,1), end: new Date(2011,7,31), text:"Eidg. Fa. Informatik", color:"red"},
-            { start: new Date(2011,8,1), end: new Date(2012,7,31), text:"Arbeiten", color:"white"},
-            { start: new Date(2012,8,1), end: new Date(2017,2,31), text:"BSc. Informatik", color:"purple"},
+            { start: new Date(1994,6,31), end: new Date(1999,5,1), text:"Grundschule", color:"steelblue"},
+            { start: new Date(1999,5,2), end: new Date(1999,6,31), text:"Sommerferien", color:"lightblue"},
+            { start: new Date(1999,6,31), end: new Date(2003,5,1), text:"Sekundarschule", color: "rosybrown"},
+            { start: new Date(2003,5,1), end: new Date(2003,6,31), text:"Sommerferien", color:"chartreuse"},
+            { start: new Date(2003,7,1), end: new Date(2007,5,1), text:"Berufslehre", color:"cadetblue"},
+            { start: new Date(2007,5,2), end: new Date(2009,10,30), text:"Arbeiten", color:"burlywood"},
+            { start: new Date(2009,11,1), end: new Date(2011,7,31), text:"Eidg. Fa. Informatik", color:"gainsboro"},
+            { start: new Date(2011,8,1), end: new Date(2012,7,31), text:"Arbeiten", color:"mediumspringgreen"},
+            { start: new Date(2012,8,1), end: new Date(2017,2,31), text:"BSc. Informatik", color:"thistle"},
             { start: new Date(2017,3,1), end: new Date(2076,4,5), text:"Zukunft", color:"white"}
 
         ];
@@ -98,11 +94,11 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         var x = d3.scaleLinear()
-            .domain([1,54])
-            .range([0,width]);
+            .domain([0,54])  //Amerikanisches Datumsformat = 52 oder 53 Wochen pro Jahr
+            .range([0,width]);  //Für Abstand Skala <-> Daten
 
         var y = d3.scaleLinear()
-            .domain([1,91])
+            .domain([0,90])
             .range([0,height]);
 
 
@@ -116,16 +112,16 @@
             .append("rect");
 
         var styleRect = rectangles
-            .attr("x", function(d){return x(+formatWeek(d.date)+1);}) //first + makes string to int, sencond + adds 1
-            .attr("y", function(d){return y(formatYear(d.date)-1986);}) //format years to 1-90
+            .attr("x", (d => x(+formatWeek(d.date)+1))) //{return x(+formatWeek(d.date)+1);}) //first + makes string to int, sencond + adds 1
+            .attr("y", (d => y(formatYear(d.date)-1987))) //){return y(formatYear(d.date)-1987);}) //format years to 1-90
             .attr("rx", 3)
             .attr("ry", 3)
             .attr("width", 9)
             .attr("height", 9)
             .attr("stroke", "black")
             .attr("stroke-width", 1)
-            .style("fill", function (d){ return d.color;})
-            .on("mouseover", function(d)
+            .style("fill", (d => d.color))
+            .on("mouseover", (d =>
         {
             div.transition()
                 .duration(200)
@@ -135,13 +131,13 @@
                 " Jahr: " + formatYear(d.date))
                 .style("left", (d3.event.pageX)+10 + "px")
                 .style("top", (d3.event.pageY)-10 + "px");
-        })
-            .on("mouseout", function()
+        }))
+            .on("mouseout", (d =>
             {
                div.transition()
                    .duration(200)
                    .style("opacity", 0);
-            });
+            }));
 
         var xAchse = d3.axisBottom(x)
             .ticks(10);
